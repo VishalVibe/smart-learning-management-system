@@ -1,0 +1,35 @@
+<div class="enrollment-container">
+
+  <h1>My Enrollments</h1>
+
+  <table *ngIf="enrollments.length > 0">
+
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Course ID</th>
+        <th>Batch ID</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let enrollment of enrollments">
+
+        <td>{{ enrollment.id }}</td>
+
+        <td>{{ enrollment.userId }}</td>
+
+        <td>{{ enrollment.courseId }}</td>
+
+        <td>{{ enrollment.batchId }}</td>
+
+        <td>{{ enrollment.status }}</td>
+
+      </tr>
+    </tbody>
+
+  </table>
+
+</div>

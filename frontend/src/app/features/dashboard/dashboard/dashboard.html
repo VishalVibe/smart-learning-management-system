@@ -19,19 +19,19 @@
         />
 
         <div class="course-circle web">
-          Web Development
+          {{ courses[0]?.title || 'Angular Fundamentals' }}
         </div>
 
         <div class="course-circle database">
-          Database Systems
+          {{ courses[1]?.title || 'Advanced Angular' }}
         </div>
 
         <div class="course-circle cloud">
-          Cloud Computing
+          {{ courses[2]?.title || 'NodeJS Bootcamp' }}
         </div>
 
         <div class="course-circle ai">
-          AI & Machine Learning
+          {{ courses[0]?.level || 'Beginner' }}
         </div>
 
       </div>
