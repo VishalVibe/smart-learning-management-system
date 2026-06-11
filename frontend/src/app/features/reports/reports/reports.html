@@ -1,0 +1,101 @@
+<div class="page-container">
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <main class="content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      <div class="page-title-row">
+        <h2 class="page-title">Reports & Analytics</h2>
+        <p class="page-sub">Platform-wide learning performance overview</p>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-state">Loading reports... 🌸</div>
+      } @else {
+        <div class="stats-grid">
+
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.totalLearners }}</p>
+              <p class="stat-label">Total Learners</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.totalCourses }}</p>
+              <p class="stat-label">Total Courses</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✎</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.totalEnrollments }}</p>
+              <p class="stat-label">Total Enrollments</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">↗</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.averageProgress }}%</p>
+              <p class="stat-label">Avg Progress</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.averageScore }}%</p>
+              <p class="stat-label">Avg Assessment Score</p>
+            </div>
+          </div>
+
+          <div class="stat-card highlight">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <p class="stat-val">{{ summary()?.completionRate }}%</p>
+              <p class="stat-label">Completion Rate</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Progress bar breakdown -->
+        <div class="breakdown-card">
+          <h3 class="breakdown-title">Performance Overview</h3>
+
+          <div class="breakdown-row">
+            <span class="breakdown-label">Average Progress</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill" [style.width.%]="summary()?.averageProgress"></div>
+            </div>
+            <span class="breakdown-pct">{{ summary()?.averageProgress }}%</span>
+          </div>
+
+          <div class="breakdown-row">
+            <span class="breakdown-label">Avg Assessment Score</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill score" [style.width.%]="summary()?.averageScore"></div>
+            </div>
+            <span class="breakdown-pct">{{ summary()?.averageScore }}%</span>
+          </div>
+
+          <div class="breakdown-row">
+            <span class="breakdown-label">Completion Rate</span>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill completion" [style.width.%]="summary()?.completionRate"></div>
+            </div>
+            <span class="breakdown-pct">{{ summary()?.completionRate }}%</span>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>

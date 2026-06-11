@@ -1,0 +1,52 @@
+<div class="page-container">
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <main class="content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      @if (loading()) {
+        <div class="loading-state">Loading result... 🌸</div>
+      } @else {
+        <div class="result-card" [class.passed]="attempt()?.status === 'passed'" [class.failed]="attempt()?.status === 'failed'">
+
+          <div class="result-icon">
+            {{ attempt()?.status === 'passed' ? '🏆' : '❌' }}
+          </div>
+
+          <h2 class="result-title">
+            {{ attempt()?.status === 'passed' ? 'Congratulations!' : 'Better Luck Next Time' }}
+          </h2>
+
+          <p class="result-course">{{ assessment()?.title }}</p>
+
+          <div class="score-circle">
+            <span class="score-val">{{ attempt()?.score }}%</span>
+            <span class="score-label">Your Score</span>
+          </div>
+
+          <div class="result-meta">
+            <div class="meta-item">
+              <span class="meta-label">Passing Marks</span>
+              <span class="meta-val">{{ assessment()?.passingMarks }}%</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Status</span>
+              <span class="meta-val status" [class.pass]="attempt()?.status === 'passed'" [class.fail]="attempt()?.status === 'failed'">
+                {{ attempt()?.status === 'passed' ? 'Passed ✓' : 'Failed ✗' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn-outline" (click)="retake()">Retake Assessment</button>
+            <button class="btn-primary" (click)="goToProgress()">Back to Progress</button>
+          </div>
+
+        </div>
+      }
+    </div>
+  </main>
+</div>

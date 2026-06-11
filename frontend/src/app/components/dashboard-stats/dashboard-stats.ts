@@ -1,5 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { ProgressService } from '../../services/progress';
 
 @Component({
@@ -10,23 +12,21 @@ import { ProgressService } from '../../services/progress';
   styleUrl: './dashboard-stats.css'
 })
 export class DashboardStats implements OnInit {
+  private progressService = inject(ProgressService);
+  private http = inject(HttpClient);
 
-  progress: any[] = [];
-
-  constructor(
-    private progressService: ProgressService,
-    private cdr: ChangeDetectorRef   // ✅ add this
-  ) {}
+  progress: { courseName: string; completion: number }[] = [];
 
   ngOnInit(): void {
-    this.progressService.getProgress().subscribe({
-      next: (data) => {
-        this.progress = [...data];   // ✅ spread forces new reference
-        this.cdr.detectChanges();    // ✅ forces Angular to re-render
-        console.log('Progress loaded:', this.progress);
-      },
-      error: (err) => {
-        console.error('PROGRESS ERROR:', err);
+    forkJoin({
+      progressList: this.progressService.getByUserId(1),
+      courses: this.http.get<any[]>('http://localhost:3000/courses')
+    }).subscribe({
+      next: ({ progressList, courses }) => {
+        this.progress = progressList.map(p => ({
+          courseName: courses.find(c => c.id === p.courseId)?.title ?? 'Course #' + p.courseId,
+          completion: p.completionPercentage
+        }));
       }
     });
   }

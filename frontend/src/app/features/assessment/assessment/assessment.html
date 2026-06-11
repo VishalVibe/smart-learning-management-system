@@ -1,0 +1,51 @@
+<div class="page-container">
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <main class="content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      @if (loading()) {
+        <div class="loading-state">Loading assessment... 🌸</div>
+      } @else {
+        <div class="assessment-card">
+          <div class="assessment-header">
+            <h2 class="assessment-title">{{ assessment()?.title }}</h2>
+            <span class="passing-badge">Passing Marks: {{ assessment()?.passingMarks }}%</span>
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            @for (q of questions(); track q.id; let i = $index) {
+              <div class="question-block">
+                <p class="question-text">{{ i + 1 }}. {{ q.question }}</p>
+                <div class="options-list">
+                  @for (opt of q.options; track opt) {
+                    <label class="option-label" [class.selected]="form.get('q_' + q.id)?.value === opt">
+                      <input
+                        type="radio"
+                        [formControlName]="'q_' + q.id"
+                        [value]="opt"
+                      />
+                      <span>{{ opt }}</span>
+                    </label>
+                  }
+                </div>
+                @if (form.get('q_' + q.id)?.invalid && form.get('q_' + q.id)?.touched) {
+                  <p class="error-msg">Please select an answer.</p>
+                }
+              </div>
+            }
+
+            <div class="form-footer">
+              <button type="submit" class="btn-submit" [disabled]="submitting()">
+                {{ submitting() ? 'Submitting...' : 'Submit Assessment' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  </main>
+</div>

@@ -1,0 +1,80 @@
+<div class="page-container">
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <main class="content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      <div class="page-title-row">
+        <h2 class="page-title">My Learning Progress</h2>
+        <p class="page-sub">Track your journey across all enrolled courses</p>
+      </div>
+
+      <div class="summary-strip">
+        <div class="summary-card">
+          <span class="summary-icon">📚</span>
+          <div>
+            <p class="summary-val">{{ totalCourses() }}</p>
+            <p class="summary-label">Courses Enrolled</p>
+          </div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-icon">✅</span>
+          <div>
+            <p class="summary-val">{{ completed() }}</p>
+            <p class="summary-label">Completed</p>
+          </div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-icon">↗</span>
+          <div>
+            <p class="summary-val">{{ avgProgress() }}%</p>
+            <p class="summary-label">Avg Progress</p>
+          </div>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-state">Loading your progress... 🌸</div>
+      } @else {
+        <div class="progress-grid">
+          @for (item of progressList(); track item.id) {
+            <div class="progress-card">
+              <div class="card-top">
+                <div class="course-icon">🌸</div>
+                <div class="course-info">
+                  <p class="course-title">{{ courseMap()[item.courseId] || 'Course #' + item.courseId }}</p>
+                  <p class="last-accessed">Last accessed: {{ item.lastAccessed }}</p>
+                </div>
+                @if (item.completionPercentage === 100) {
+                  <span class="badge completed">Completed</span>
+                } @else {
+                  <span class="badge in-progress">In Progress</span>
+                }
+              </div>
+
+              <div class="modules-row">
+                <span class="modules-text">{{ item.completedModules }} / {{ item.totalModules }} Modules</span>
+                <span class="pct-text">{{ item.completionPercentage }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="item.completionPercentage"></div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-outline" (click)="viewDetails(item.id)">View Details</button>
+                @if (item.completionPercentage === 100) {
+                  <button class="btn-primary" (click)="startAssessment(item.courseId)">Take Assessment</button>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">🌸 No progress records found. Enroll in a course to begin!</div>
+          }
+        </div>
+      }
+    </div>
+  </main>
+</div>

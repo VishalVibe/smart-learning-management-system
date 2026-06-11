@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { Sidebar } from '../../../components/sidebar/sidebar';
@@ -9,7 +8,7 @@ import { Header } from '../../../components/header/header';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, Sidebar, Header],
+  imports: [CommonModule, Sidebar, Header],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })

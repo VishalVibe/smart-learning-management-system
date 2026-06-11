@@ -1,0 +1,81 @@
+<div class="page-container">
+  <aside class="sidebar">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <main class="content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      <button class="btn-back" (click)="goBack()">← Back to Progress</button>
+
+      @if (loading()) {
+        <div class="loading-state">Loading details... 🌸</div>
+      } @else {
+        <div class="detail-card">
+
+          <div class="detail-header">
+            <div>
+              <h2 class="detail-title">{{ courseTitle() }}</h2>
+              <p class="detail-sub">
+                Last accessed: {{ progress()?.lastAccessed }}
+              </p>
+            </div>
+            @if (progress()?.completionPercentage === 100) {
+              <span class="badge completed">Completed</span>
+            } @else {
+              <span class="badge in-progress">In Progress</span>
+            }
+          </div>
+
+          <!-- Overall progress bar -->
+          <div class="overall-section">
+            <div class="overall-row">
+              <span class="overall-label">Overall Progress</span>
+              <span class="overall-pct">{{ progress()?.completionPercentage }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="progress()?.completionPercentage"></div>
+            </div>
+            <p class="modules-note">
+              {{ progress()?.completedModules }} of {{ progress()?.totalModules }} modules completed
+            </p>
+          </div>
+
+          <!-- Module breakdown -->
+          <h3 class="section-heading">Module Breakdown</h3>
+          <div class="modules-grid">
+            @for (mod of modules(); track mod.index) {
+              <div class="module-item" [class.done]="mod.done">
+                <span class="module-icon">{{ mod.done ? '✅' : '○' }}</span>
+                <span class="module-label">{{ mod.label }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Assessment result -->
+          <h3 class="section-heading">Assessment</h3>
+          @if (attempt()) {
+            <div class="attempt-card" [class.passed]="attempt()?.status === 'passed'" [class.failed]="attempt()?.status === 'failed'">
+              <span class="attempt-icon">{{ attempt()?.status === 'passed' ? '🏆' : '❌' }}</span>
+              <div class="attempt-info">
+                <p class="attempt-status">{{ attempt()?.status === 'passed' ? 'Passed' : 'Failed' }}</p>
+                <p class="attempt-score">Score: {{ attempt()?.score }}%</p>
+              </div>
+            </div>
+          } @else {
+            <div class="no-attempt">
+              @if (progress()?.completionPercentage === 100) {
+                <p>You haven't attempted the assessment yet.</p>
+                <button class="btn-primary" (click)="startAssessment()">Take Assessment</button>
+              } @else {
+                <p>Complete all modules to unlock the assessment.</p>
+              }
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  </main>
+</div>
