@@ -17,7 +17,7 @@ export class UserService {
   createProfile(profile: Profile) {
     return this.http.post<Profile>('http://localhost:3000/profiles', profile);
   }
-  getProfileByUserId(userId: string): Observable<Profile[]> {
+  getProfileByUserId(userId: string) {
     return this.http.get<Profile[]>(`http://localhost:3000/profiles?userId=${userId}`);
   }
 
