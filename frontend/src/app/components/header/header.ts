@@ -10,6 +10,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './header.css',
 })
 export class Header {
+  showProfileMenu = false;
+
   get greeting(): string {
     const hours = new Date().getHours();
     if (hours < 12) {
@@ -19,5 +21,9 @@ export class Header {
     } else {
       return 'Good Evening';
     }
+  }
+
+  toggleProfileMenu() {
+    this.showProfileMenu = !this.showProfileMenu;
   }
 }

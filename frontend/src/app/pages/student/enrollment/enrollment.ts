@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { Sidebar } from '../../../components/sidebar/sidebar';
 import { Header } from '../../../components/header/header';
@@ -34,7 +35,8 @@ export class EnrollmentComponent implements OnInit {
     private courseService: CourseService,
     private categoryService: CategoryService,
     private instructorService: InstructorService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -114,22 +116,7 @@ export class EnrollmentComponent implements OnInit {
   }
 
   enrollInCourse(courseId: number): void {
-    const enrollmentData = {
-      userId: 1,
-      courseId,
-      batchId: 1,
-      status: 'enrolled'
-    };
-
-    this.enrollmentService.createEnrollment(enrollmentData).subscribe({
-      next: () => {
-        alert('Enrollment Successful!');
-        this.loadEnrollments();
-      },
-      error: (err: any) => {
-        console.error(err);
-      }
-    });
+    this.router.navigate(['/subscription', courseId]);
   }
 
   deleteEnrollment(id: number): void {

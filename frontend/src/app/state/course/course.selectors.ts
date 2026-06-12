@@ -1,5 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { CourseState, selectAll, selectEntities } from './course.reducer';
+import { Course } from '../../models/course.model';
+import { Dictionary } from '@ngrx/entity';
 
 export const selectCourseState = createFeatureSelector<CourseState>('courses');
 
@@ -31,7 +33,10 @@ export const selectSelectedCourseId = createSelector(
 export const selectSelectedCourse = createSelector(
   selectCourseEntities,
   selectSelectedCourseId,
-  (entities, selectedId) => selectedId ? entities[selectedId] || null : null
+  (entities: any, selectedId) => {
+    const coursesDict = entities as Dictionary<Course>;
+    return selectedId ? coursesDict[selectedId] || null : null;
+  }
 );
 
 export const selectCourseFilters = createSelector(
@@ -42,8 +47,9 @@ export const selectCourseFilters = createSelector(
 export const selectFilteredCourses = createSelector(
   selectAllCourses,
   selectCourseFilters,
-  (courses, filters) => {
-    return courses.filter(course => {
+  (courses: any, filters) => {
+    const coursesList = courses as Course[];
+    return coursesList.filter((course: Course) => {
       const matchesSearch = !filters.search || 
         course.title.toLowerCase().includes(filters.search.toLowerCase()) ||
         course.description.toLowerCase().includes(filters.search.toLowerCase()) ||

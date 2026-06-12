@@ -13,8 +13,6 @@ import { courseReducer } from './state/course/course.reducer';
 import { CourseEffects } from './state/course/course.effects';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes), provideHttpClient()],
-};
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),

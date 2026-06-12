@@ -12,4 +12,5 @@ export interface Course {
   description: string;
   imageUrl?: string;
   availability: 'Available' | 'Upcoming' | 'Closed';
+  rating?: number;
 }

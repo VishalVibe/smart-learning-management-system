@@ -1,0 +1,501 @@
+<div class="checkout-page">
+  <!-- Distraction-free Header -->
+  <header class="checkout-header">
+    <div class="header-content">
+      <div class="logo-area" routerLink="/enrollment">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">Smart<span class="logo-highlight">LMS</span></span>
+      </div>
+      <button class="cancel-link" (click)="cancelCheckout()">
+        <span class="cancel-icon">✕</span> Cancel
+      </button>
+    </div>
+  </header>
+
+  <!-- Error State -->
+  <div class="checkout-container error-state" *ngIf="errorMsg">
+    <div class="error-card">
+      <span class="error-icon">⚠️</span>
+      <h2>Checkout Error</h2>
+      <p>{{ errorMsg }}</p>
+      <button class="btn-primary" routerLink="/enrollment">Back to Enrollments</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="checkout-container loading-state" *ngIf="loading && !errorMsg">
+    <div class="loader-card">
+      <div class="spinner"></div>
+      <p>Preparing checkout details...</p>
+    </div>
+  </div>
+
+  <!-- Main Checkout Content -->
+  <div class="checkout-container" *ngIf="!loading && !errorMsg && !isPaymentSuccess">
+    <div class="checkout-grid">
+      
+      <!-- Left Column: Checkout Form Details -->
+      <main class="checkout-main">
+        <h1 class="checkout-title">Checkout to start learning</h1>
+
+        <!-- Selected Course Summary -->
+        <section class="checkout-section course-summary" *ngIf="course">
+          <div class="course-summary-card">
+            <div class="course-summary-info">
+              <span class="course-meta-tag">{{ course.level }}</span>
+              <h2 class="course-title">{{ course.title }}</h2>
+              <p class="course-author">By {{ course.instructor }}</p>
+              <div class="course-ratings">
+                <span class="stars">⭐⭐⭐⭐⭐</span>
+                <span class="rating-num">{{ course.rating }}</span>
+              </div>
+            </div>
+            <div class="course-summary-duration">
+              <span class="duration-icon">⏱️</span>
+              <span>{{ course.duration }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Plan Selection -->
+        <section class="checkout-section">
+          <h3 class="section-title">Select your plan</h3>
+          
+          <div class="plans-list">
+            <!-- Yearly Option -->
+            <div 
+              class="plan-option" 
+              [class.active]="selectedPlan === 'yearly'" 
+              [class.disabled]="isPaymentStarted"
+              (click)="selectPlan('yearly')"
+            >
+              <div class="plan-radio">
+                <input 
+                  type="radio" 
+                  name="plan" 
+                  [checked]="selectedPlan === 'yearly'" 
+                  [disabled]="isPaymentStarted"
+                >
+              </div>
+              <div class="plan-details">
+                <div class="plan-header-row">
+                  <span class="plan-name">Yearly Access</span>
+                  <span class="best-value-badge">Best value</span>
+                </div>
+                <div class="plan-price-row">
+                  <span class="plan-price">₹375.00/mo</span>
+                  <span class="plan-price-slashed">₹500.00</span>
+                </div>
+                <p class="plan-billing-desc">
+                  ₹4,500.00/year (originally ₹6,000.00/year) billed annually.
+                </p>
+              </div>
+            </div>
+
+            <!-- Monthly Option -->
+            <div 
+              class="plan-option" 
+              [class.active]="selectedPlan === 'monthly'" 
+              [class.disabled]="isPaymentStarted"
+              (click)="selectPlan('monthly')"
+            >
+              <div class="plan-radio">
+                <input 
+                  type="radio" 
+                  name="plan" 
+                  [checked]="selectedPlan === 'monthly'" 
+                  [disabled]="isPaymentStarted"
+                >
+              </div>
+              <div class="plan-details">
+                <span class="plan-name">Monthly Access</span>
+                <div class="plan-price-row">
+                  <span class="plan-price">₹999.00/mo</span>
+                </div>
+                <p class="plan-billing-desc">Billed monthly. Cancel anytime.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Included Features -->
+          <div class="included-features">
+            <h4 class="features-title">What's included:</h4>
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">✓</span>
+                <span>Access to over 28,000 of our top courses in tech, business, and more</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span>Hands-on learning experiences to build your skills</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span>Course recommendations to help you start learning faster</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Billing Address -->
+        <section class="checkout-section">
+          <h3 class="section-title">Billing address</h3>
+          <div class="billing-form">
+            <div class="form-group">
+              <label for="country">Country</label>
+              <div class="select-wrapper">
+                <select id="country" [(ngModel)]="billingCountry" [disabled]="isPaymentStarted">
+                  <option value="India">India</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="state">State / Union Territory</label>
+              <div class="select-wrapper">
+                <select id="state" [(ngModel)]="billingState" [disabled]="isPaymentStarted">
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payment Method -->
+        <section class="checkout-section">
+          <div class="payment-method-header">
+            <h3 class="section-title">Payment Method</h3>
+            <span class="secure-badge">
+              <span class="lock-icon">🔒</span> Secure and encrypted
+            </span>
+          </div>
+
+          <div class="payment-options">
+            <!-- UPI Selector Header -->
+            <div 
+              class="payment-option-tab" 
+              [class.active]="selectedPaymentMethod === 'upi'"
+              [class.disabled]="isPaymentStarted"
+              (click)="selectPaymentMethod('upi')"
+            >
+              <input 
+                type="radio" 
+                name="payment" 
+                id="payment-upi" 
+                [checked]="selectedPaymentMethod === 'upi'"
+                [disabled]="isPaymentStarted"
+              >
+              <label for="payment-upi" class="payment-label">
+                <span class="upi-text-logo">UPI</span> UPI Payment
+              </label>
+            </div>
+
+            <!-- UPI Content Area (QR Code Component) -->
+            <div class="payment-tab-content" *ngIf="selectedPaymentMethod === 'upi'">
+              <!-- QR Code NOT started yet -->
+              <div class="qr-placeholder" *ngIf="!isPaymentStarted">
+                <span class="qr-placeholder-icon">📱</span>
+                <p class="qr-placeholder-text">
+                  Select <strong>Start Subscription</strong> on the summary panel to generate the UPI QR code.
+                </p>
+              </div>
+
+              <!-- QR Code Active (Started) -->
+              <div class="qr-active-container" *ngIf="isPaymentStarted">
+                <div class="upi-header">
+                  <div class="upi-logo">
+                    <span class="upi-u">U</span><span class="upi-p">P</span><span class="upi-i">I</span>
+                  </div>
+                  <p class="upi-instruction">
+                    Scan the QR code using your preferred UPI app to complete the payment
+                  </p>
+                </div>
+
+                <!-- Custom SVG QR Code with Scanning Laser Animation -->
+                <div class="qr-code-wrapper">
+                  <div class="qr-scanning-laser"></div>
+                  <svg class="qr-svg" viewBox="0 0 100 100" width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- QR Background -->
+                    <rect width="100" height="100" fill="#ffffff" rx="8"/>
+                    
+                    <!-- Finder Patterns (Top-Left, Top-Right, Bottom-Left Corners) -->
+                    <!-- Top-Left -->
+                    <rect x="8" y="8" width="22" height="22" fill="#2d2424" rx="2"/>
+                    <rect x="12" y="12" width="14" height="14" fill="#ffffff" rx="1"/>
+                    <rect x="15" y="15" width="8" height="8" fill="#e07b5a" rx="0.5"/>
+                    
+                    <!-- Top-Right -->
+                    <rect x="70" y="8" width="22" height="22" fill="#2d2424" rx="2"/>
+                    <rect x="74" y="12" width="14" height="14" fill="#ffffff" rx="1"/>
+                    <rect x="77" y="15" width="8" height="8" fill="#e07b5a" rx="0.5"/>
+                    
+                    <!-- Bottom-Left -->
+                    <rect x="8" y="70" width="22" height="22" fill="#2d2424" rx="2"/>
+                    <rect x="12" y="74" width="14" height="14" fill="#ffffff" rx="1"/>
+                    <rect x="15" y="77" width="8" height="8" fill="#e07b5a" rx="0.5"/>
+
+                    <!-- Simulated QR Dot Grid Matrix -->
+                    <g fill="#2d2424" opacity="0.85">
+                      <!-- Row 1 -->
+                      <rect x="36" y="8" width="4" height="4" rx="1"/>
+                      <rect x="44" y="8" width="4" height="4" rx="1"/>
+                      <rect x="56" y="8" width="4" height="4" rx="1"/>
+                      <rect x="62" y="8" width="4" height="4" rx="1"/>
+                      
+                      <!-- Row 2 -->
+                      <rect x="36" y="16" width="4" height="4" rx="1"/>
+                      <rect x="48" y="16" width="4" height="4" rx="1"/>
+                      <rect x="60" y="16" width="4" height="4" rx="1"/>
+                      
+                      <!-- Row 3 -->
+                      <rect x="8" y="36" width="4" height="4" rx="1"/>
+                      <rect x="16" y="36" width="4" height="4" rx="1"/>
+                      <rect x="24" y="36" width="4" height="4" rx="1"/>
+                      <rect x="36" y="36" width="4" height="4" rx="1"/>
+                      <rect x="48" y="36" width="4" height="4" rx="1"/>
+                      <rect x="56" y="36" width="4" height="4" rx="1"/>
+                      <rect x="64" y="36" width="4" height="4" rx="1"/>
+                      <rect x="72" y="36" width="4" height="4" rx="1"/>
+                      <rect x="88" y="36" width="4" height="4" rx="1"/>
+
+                      <!-- Row 4 -->
+                      <rect x="8" y="44" width="4" height="4" rx="1"/>
+                      <rect x="20" y="44" width="4" height="4" rx="1"/>
+                      <rect x="32" y="44" width="4" height="4" rx="1"/>
+                      <rect x="52" y="44" width="4" height="4" rx="1"/>
+                      <rect x="68" y="44" width="4" height="4" rx="1"/>
+                      <rect x="80" y="44" width="4" height="4" rx="1"/>
+
+                      <!-- Row 5 -->
+                      <rect x="12" y="52" width="4" height="4" rx="1"/>
+                      <rect x="28" y="52" width="4" height="4" rx="1"/>
+                      <rect x="40" y="52" width="4" height="4" rx="1"/>
+                      <rect x="48" y="52" width="4" height="4" rx="1"/>
+                      <rect x="60" y="52" width="4" height="4" rx="1"/>
+                      <rect x="76" y="52" width="4" height="4" rx="1"/>
+                      <rect x="84" y="52" width="4" height="4" rx="1"/>
+
+                      <!-- Row 6 -->
+                      <rect x="36" y="60" width="4" height="4" rx="1"/>
+                      <rect x="44" y="60" width="4" height="4" rx="1"/>
+                      <rect x="56" y="60" width="4" height="4" rx="1"/>
+                      <rect x="64" y="60" width="4" height="4" rx="1"/>
+                      <rect x="88" y="60" width="4" height="4" rx="1"/>
+
+                      <!-- Row 7 -->
+                      <rect x="36" y="72" width="4" height="4" rx="1"/>
+                      <rect x="48" y="72" width="4" height="4" rx="1"/>
+                      <rect x="60" y="72" width="4" height="4" rx="1"/>
+                      <rect x="84" y="72" width="4" height="4" rx="1"/>
+
+                      <!-- Row 8 -->
+                      <rect x="36" y="80" width="4" height="4" rx="1"/>
+                      <rect x="44" y="80" width="4" height="4" rx="1"/>
+                      <rect x="56" y="80" width="4" height="4" rx="1"/>
+                      <rect x="68" y="80" width="4" height="4" rx="1"/>
+                      <rect x="80" y="80" width="4" height="4" rx="1"/>
+                      <rect x="88" y="80" width="4" height="4" rx="1"/>
+
+                      <!-- Row 9 -->
+                      <rect x="36" y="88" width="4" height="4" rx="1"/>
+                      <rect x="48" y="88" width="4" height="4" rx="1"/>
+                      <rect x="60" y="88" width="4" height="4" rx="1"/>
+                      <rect x="72" y="88" width="4" height="4" rx="1"/>
+                    </g>
+
+                    <!-- Center Badge Frame (UPI-inspired center badge) -->
+                    <rect x="42" y="42" width="16" height="16" rx="2" fill="#ffffff" stroke="#e07b5a" stroke-width="1.5"/>
+                    <!-- Logo mark inner details -->
+                    <path d="M46,53 L49,46 L54,46 L51,53 Z" fill="#2d2424"/>
+                    <rect x="51" y="49" width="3" height="4" fill="#e07b5a"/>
+                  </svg>
+                </div>
+
+                <!-- Custom Timer Countdown & Progress Line -->
+                <div class="qr-timer-section">
+                  <div class="timer-progress-bg">
+                    <!-- Progress bar maps from 300s down to 0s -->
+                    <div 
+                      class="timer-progress-fill" 
+                      [style.width.%]="(countdownSeconds / 300) * 100"
+                    ></div>
+                  </div>
+                  <p class="timer-text">
+                    You have <span class="timer-count">{{ countdownDisplay }}</span> to pay
+                  </p>
+                </div>
+
+                <!-- Simulated Scanning status -->
+                <div class="payment-verification-status">
+                  <div class="spinner-small" *ngIf="!isProcessing"></div>
+                  <span class="status-message" *ngIf="!isProcessing">Waiting for your mobile app scan...</span>
+                  
+                  <div class="spinner-small spinner-processing" *ngIf="isProcessing"></div>
+                  <span class="status-message highlight-text" *ngIf="isProcessing">Processing UPI transaction...</span>
+                </div>
+
+                <!-- Simulate Success helper button -->
+                <div class="simulation-actions">
+                  <button 
+                    class="btn-success" 
+                    [disabled]="isProcessing"
+                    (click)="simulatePaymentSuccess()"
+                  >
+                    Simulate Payment Success ✔
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cards Selector Header -->
+            <div 
+              class="payment-option-tab" 
+              [class.active]="selectedPaymentMethod === 'cards'"
+              [class.disabled]="isPaymentStarted"
+              (click)="selectPaymentMethod('cards')"
+            >
+              <input 
+                type="radio" 
+                name="payment" 
+                id="payment-cards" 
+                [checked]="selectedPaymentMethod === 'cards'"
+                [disabled]="isPaymentStarted"
+              >
+              <label for="payment-cards" class="payment-label">
+                <span>Credit / Debit Card</span>
+                <span class="card-logos-strip">
+                  <span class="card-logo visa">Visa</span>
+                  <span class="card-logo mastercard">MC</span>
+                  <span class="card-logo amex">Amex</span>
+                </span>
+              </label>
+            </div>
+
+            <!-- Cards Option Content -->
+            <div class="payment-tab-content" *ngIf="selectedPaymentMethod === 'cards'">
+              <div class="card-disabled-message">
+                <span class="info-icon">ℹ️</span>
+                <p>Card payments are currently disabled. Please select the <strong>UPI</strong> payment method to complete the checkout demo.</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </main>
+
+      <!-- Right Column: Sticky Pricing Summary Sidebar -->
+      <aside class="checkout-sidebar">
+        <div class="summary-card-wrapper">
+          <h2 class="summary-heading">Summary</h2>
+
+          <!-- Pricing Calculations -->
+          <div class="summary-totals">
+            <div class="totals-row">
+              <span class="totals-label">Original price:</span>
+              <span class="totals-value">
+                {{ selectedPlan === 'yearly' ? '₹6,000.00' : '₹999.00' }}
+              </span>
+            </div>
+            
+            <div class="totals-row discount-row" *ngIf="selectedPlan === 'yearly' && couponApplied">
+              <span class="totals-label">Promo discount:</span>
+              <span class="totals-value">-₹1,500.00</span>
+            </div>
+
+            <hr class="totals-divider">
+
+            <div class="totals-row grand-total-row">
+              <span class="totals-label">Total due today:</span>
+              <span class="totals-value">₹{{ totalDue | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="renewal-info-text">
+              <p *ngIf="selectedPlan === 'yearly'">
+                Starting on <strong>June 12, 2027</strong>, your subscription will renew at <strong>₹6,000.00/year</strong>.
+              </p>
+              <p *ngIf="selectedPlan === 'monthly'">
+                Subscription automatically renews every month at <strong>₹999.00/mo</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Coupon Promo Codes -->
+          <div class="coupon-section">
+            <h3 class="coupon-title">Promotions</h3>
+            
+            <div class="coupon-input-wrapper" *ngIf="!couponApplied">
+              <input 
+                type="text" 
+                placeholder="Enter Coupon" 
+                [(ngModel)]="couponCode"
+                [disabled]="isPaymentStarted"
+                (keyup.enter)="applyCoupon()"
+              >
+              <button 
+                class="btn-apply-coupon" 
+                [disabled]="isPaymentStarted || !couponCode"
+                (click)="applyCoupon()"
+              >
+                Apply
+              </button>
+            </div>
+
+            <div class="coupon-applied-badge" *ngIf="couponApplied">
+              <div class="coupon-badge-text">
+                <span class="coupon-tag-icon">🏷️</span>
+                <span class="coupon-code-text"><strong>{{ couponCode }}</strong> is applied</span>
+              </div>
+              <button 
+                class="btn-remove-coupon" 
+                [disabled]="isPaymentStarted"
+                (click)="removeCoupon()"
+              >
+                ✕
+              </button>
+            </div>
+            <p class="coupon-error" *ngIf="couponError">{{ couponError }}</p>
+          </div>
+
+          <!-- Action Button: Start Subscription -->
+          <div class="checkout-actions">
+            <button 
+              class="btn-checkout-primary"
+              [disabled]="isPaymentStarted || isProcessing"
+              (click)="startPayment()"
+            >
+              <span class="btn-lock-icon">🔒</span> Start Subscription
+            </button>
+            <p class="checkout-disclaimer">
+              By completing your purchase, you agree to these <a href="#">Terms of Service</a> and authorize recurring billing charges. Cancel anytime in account preferences.
+            </p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Full Screen Payment Success State -->
+  <div class="checkout-success-container" *ngIf="isPaymentSuccess">
+    <div class="success-card">
+      <div class="success-checkmark-wrapper">
+        <svg class="success-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+          <circle class="success-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="success-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p class="success-desc">You are now enrolled in <strong>{{ course?.title }}</strong>.</p>
+      <div class="loader-bar-wrapper">
+        <div class="loader-bar-fill"></div>
+      </div>
+      <p class="success-redirect-text">Redirecting to your enrollment dashboard...</p>
+    </div>
+  </div>
+</div>

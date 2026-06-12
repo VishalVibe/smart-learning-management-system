@@ -39,14 +39,14 @@ describe('Course State Management', () => {
     it('should set loading to true on loadCourses', () => {
       const action = CourseActions.loadCourses({});
       const state = courseReducer(initialCourseState, action);
-      expect(state.loading).toBeTrue();
+      expect(state.loading).toBe(true);
       expect(state.error).toBeNull();
     });
 
     it('should add courses list on loadCoursesSuccess', () => {
       const action = CourseActions.loadCoursesSuccess({ courses: dummyCourses });
       const state = courseReducer(initialCourseState, action);
-      expect(state.loading).toBeFalse();
+      expect(state.loading).toBe(false);
       expect(state.ids.length).toBe(2);
       expect(state.entities['1']?.title).toBe('Angular Foundations');
     });
