@@ -35,8 +35,8 @@ export class ProgressDetails implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.progressService.getById(id).subscribe({
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
+    this.progressService.getById(Number(id)).subscribe({
       next: (progress) => {
         this.progress.set(progress);
         forkJoin({
@@ -45,10 +45,12 @@ export class ProgressDetails implements OnInit {
           attempts: this.http.get<any[]>(`http://localhost:3000/assessmentAttempts?userId=${progress.userId}`)
         }).subscribe({
           next: ({ courses, assessments, attempts }) => {
-            const course = courses.find(c => c.id === progress.courseId);
+            const course = courses.find(c => String(c.id) === String(progress.courseId));
             this.courseTitle.set(course?.title ?? 'Unknown Course');
             if (assessments.length) {
-              const match = attempts.find((a: AssessmentAttempt) => a.assessmentId === assessments[0].id);
+              const match = attempts.find((a: AssessmentAttempt) =>
+                String(a.assessmentId) === String(assessments[0].id)
+              );
               this.attempt.set(match ?? null);
             }
             this.loading.set(false);

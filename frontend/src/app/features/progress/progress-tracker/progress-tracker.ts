@@ -23,7 +23,7 @@ export class ProgressTracker implements OnInit {
   readonly userId = 1;
 
   progressList = signal<Progress[]>([]);
-  courseMap = signal<Record<number, string>>({});
+  courseMap = signal<Record<string, string>>({});
   loading = signal(true);
 
   totalCourses = computed(() => this.progressList().length);
@@ -41,12 +41,17 @@ export class ProgressTracker implements OnInit {
     }).subscribe({
       next: ({ progress, courses }) => {
         this.progressList.set(progress);
-        const map: Record<number, string> = {};
-        courses.forEach(c => (map[c.id] = c.title));
+        const map: Record<string, string> = {};
+        // store with string key so both "101" and 101 resolve correctly
+        courses.forEach(c => (map[String(c.id)] = c.title));
         this.courseMap.set(map);
         this.loading.set(false);
       }
     });
+  }
+
+  getCourseTitle(courseId: number): string {
+    return this.courseMap()[String(courseId)] ?? 'Course #' + courseId;
   }
 
   viewDetails(id: number): void {

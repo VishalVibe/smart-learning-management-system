@@ -7,15 +7,19 @@
       <span class="card-icon">↗</span>
     </div>
 
-    <div *ngFor="let item of progress" class="progress-row">
-      <div class="progress-label">
-        <span class="course-name">{{ item.courseName }}</span>
-        <span class="course-pct">{{ item.completion }}%</span>
+    @for (item of progress; track item.courseName) {
+      <div class="progress-row">
+        <div class="progress-label">
+          <span class="course-name">{{ item.courseName }}</span>
+          <span class="course-pct">{{ item.completion }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" [style.width.%]="item.completion"></div>
+        </div>
       </div>
-      <div class="progress-bar">
-        <div class="progress-bar-fill" [style.width.%]="item.completion"></div>
-      </div>
-    </div>
+    } @empty {
+      <p style="color:#aaa; font-size:13px; font-family:Arial,sans-serif;">No progress data found.</p>
+    }
   </div>
 
   <!-- Recent Activity -->
@@ -60,28 +64,24 @@
     </div>
 
     <div class="achievements-grid">
-
       <div class="achievement-item">
         <div class="achievement-icon">🌸</div>
         <p class="achievement-name">First Step</p>
         <p class="achievement-desc">Complete your first lesson</p>
         <p class="achievement-date">01 Jun 2025</p>
       </div>
-
       <div class="achievement-item">
         <div class="achievement-icon">🏯</div>
         <p class="achievement-name">Consistent Learner</p>
         <p class="achievement-desc">Study 7 days in a row</p>
         <p class="achievement-date">08 Jun 2025</p>
       </div>
-
       <div class="achievement-item">
         <div class="achievement-icon">🗻</div>
         <p class="achievement-name">Knowledge Seeker</p>
         <p class="achievement-desc">Enroll in 5 courses</p>
         <p class="achievement-date">10 Jun 2025</p>
       </div>
-
     </div>
 
     <a class="view-all">View All Achievements →</a>

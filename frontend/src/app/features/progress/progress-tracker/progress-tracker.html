@@ -45,7 +45,7 @@
               <div class="card-top">
                 <div class="course-icon">🌸</div>
                 <div class="course-info">
-                  <p class="course-title">{{ courseMap()[item.courseId] || 'Course #' + item.courseId }}</p>
+                  <p class="course-title">{{ getCourseTitle(item.courseId) }}</p>
                   <p class="last-accessed">Last accessed: {{ item.lastAccessed }}</p>
                 </div>
                 @if (item.completionPercentage === 100) {
